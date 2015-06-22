@@ -7,7 +7,7 @@ class WeixinHelper
 	private $weixinMessageFactory;
 	
 	function __construct() {
-		$weixinMessageFactory = new WeixinMessageFactory();
+		$this->weixinMessageFactory = new WeixinMessageFactory();
 	}
 	
 	public function check()
