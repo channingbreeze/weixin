@@ -6,4 +6,6 @@ define("TOKEN", "lixin");
 $check = new Check();
 $check->valid();
 
+$check->responseMsg();
+
 ?>

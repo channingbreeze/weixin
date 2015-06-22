@@ -4,6 +4,10 @@ class Check
 {
 	public function valid()
 	{
+		if(!isset($_GET["echostr"])) {
+			return;
+		}
+		
 		$echoStr = $_GET["echostr"];
 
 		if($this->checkSignature()){
