@@ -1,11 +1,12 @@
 <?php
 
 require_once dirname ( __FILE__ ) . '/weixinMessageFactory.class.php';
+require_once dirname ( __FILE__ ) . '/../utils/StringUtil.class.php';
 
 class WeixinHelper
 {
 	private $weixinMessageFactory;
-	
+
 	function __construct() {
 		$this->weixinMessageFactory = new WeixinMessageFactory();
 	}
@@ -24,7 +25,7 @@ class WeixinHelper
 		}
 	}
 
-	public function responseTextMessage()
+	public function responseMessage()
 	{
 		$postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
 
@@ -32,28 +33,19 @@ class WeixinHelper
 			
 			libxml_disable_entity_loader(true);
 			$postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-			$fromUsername = $postObj->FromUserName;
-			$toUsername = $postObj->ToUserName;
-			$keyword = trim($postObj->Content);
-			$time = time();
-			$textTpl = "<xml>
-						<ToUserName><![CDATA[%s]]></ToUserName>
-						<FromUserName><![CDATA[%s]]></FromUserName>
-						<CreateTime>%s</CreateTime>
-						<MsgType><![CDATA[%s]]></MsgType>
-						<Content><![CDATA[%s]]></Content>
-						<FuncFlag>0</FuncFlag>
-						</xml>";
-			if(!empty( $keyword ))
-			{
-				$msgType = "text";
-				$contentStr = $this->weixinMessageFactory->responseText($fromUsername, $toUsername, $keyword);
-				$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
-				echo $resultStr;
-			}else{
-				echo "Input something...";
+			$msgType = $postObj->MsgType;
+			
+			if($msgType == "text") {
+				$keyword = trim($postObj->Content);
+				if(StringUtil::startsWith($keyword, "嘿嘿")) {
+					return $this->weixinMessageFactory->responsePictureArticalMessage($postObj);
+				} else {
+					$this->weixinMessageFactory->responseTextMessage($postObj);
+				}
+			} else if($msgType == "event") {
+				$this->weixinMessageFactory->responseEventMessage($postObj);
 			}
-
+			
 		}else {
 			echo "";
 			exit;

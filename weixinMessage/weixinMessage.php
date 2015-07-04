@@ -6,6 +6,6 @@ define("TOKEN", "lixin");
 $weixinHelper = new WeixinHelper();
 $weixinHelper->check();
 
-$weixinHelper->responseTextMessage();
+$weixinHelper->responseMessage();
 
 ?>
