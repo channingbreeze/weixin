@@ -26,7 +26,9 @@ class WeixinHeiGame
 		$this->desArr[1] = "我知道你高兴得很！";
 		$this->desArr[2] = "这不就是你想要的么？";
 		$this->desArr[3] = "表谢我，我叫红领巾！";
-		$this->contentPerMessage = 5;
+		$this->contentPerMessage = 3;
+		// 设置随机种子
+		mt_srand($this->make_seed());
 	}
 	
 	public function responseHei($keyword) {
@@ -143,6 +145,12 @@ class WeixinHeiGame
 			}
 		}
 		return $arr;
+	}
+	
+	private function make_seed()
+	{
+		list($usec, $sec) = explode(' ', microtime());
+		return (float) $sec + ((float) $usec * 100000);
 	}
 
 }
