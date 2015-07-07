@@ -7,10 +7,8 @@
 <!DOCTYPE html>
 <head>
 	<meta charset=utf-8 />
-	<title>首页</title>
+	<title>爱奇艺会员</title>
 </head>
 <body>
-	<a href="hei.php">嘿嘿</a>
-	<a href="answer.php">智力题答案</a>
-	<a href="qiy.php">爱奇艺vip会员</a>
+	
 </body>

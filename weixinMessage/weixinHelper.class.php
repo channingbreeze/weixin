@@ -39,6 +39,8 @@ class WeixinHelper
 				$keyword = trim($postObj->Content);
 				if(StringUtil::startsWith($keyword, "嘿嘿")) {
 					return $this->weixinMessageFactory->responsePictureArticalMessage($postObj);
+				} else if(StringUtil::endsWith($keyword, "答案")) {
+					$this->weixinMessageFactory->responseTextMessage($postObj);
 				} else {
 					$this->weixinMessageFactory->responseTextMessage($postObj);
 				}

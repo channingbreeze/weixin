@@ -30,7 +30,11 @@ class WeixinMessageFactory
 		if(!empty( $keyword ))
 		{
 			$msgType = "text";
-			$contentStr = $this->weixinTextMessageFactory->responseText($keyword);
+			if(StringUtil::endsWith($keyword, "答案")) {
+				$contentStr = $this->weixinTextMessageFactory->responseQAnswer($keyword);
+			} else {
+				$contentStr = $this->weixinTextMessageFactory->responseText($keyword);
+			}
 			$resultStr = sprintf($textTpl, $fromUsername, $toUsername, $time, $msgType, $contentStr);
 			echo $resultStr;
 		}else{

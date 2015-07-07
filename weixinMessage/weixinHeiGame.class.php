@@ -33,7 +33,7 @@ class WeixinHeiGame
 	
 	public function responseHei($keyword) {
 		
-		$name = mb_substr($keyword, 2, strlen($keyword) - 2, 'UTF-8');
+		$name = mb_substr($keyword, 2, mb_strlen($keyword, 'UTF-8') - 2, 'UTF-8');
 		if(strlen($name) == 0) {
 			$name = "玩命牛";
 		}
