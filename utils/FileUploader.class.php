@@ -1,6 +1,7 @@
 <?php 
 
 require_once dirname ( __FILE__ ) . '/../qiniu/autoload.php';
+require_once dirname ( __FILE__ ) . '/ConfigUtil.class.php';
 
 use Qiniu\Auth;
 use Qiniu\Storage\UploadManager;
@@ -15,9 +16,9 @@ class FileUploader
 	private $uploadMgr;
 	
 	function __construct() {
-		$this->accessKey = 'yourAccessKey';
-		$this->secretKey = 'yourSecretKey';
-		$this->bucket = 'yourBucket';
+		$this->accessKey = ConfigUtil::getInstance()->accessKey;
+		$this->secretKey = ConfigUtil::getInstance()->secretKey;
+		$this->bucket = ConfigUtil::getInstance()->bucket;
 		$this->auth = new Auth($this->accessKey, $this->secretKey);
 		$this->token = $this->auth->uploadToken($this->bucket);
 		$this->uploadMgr = new UploadManager();

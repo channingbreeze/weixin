@@ -5,6 +5,7 @@ require_once dirname ( __FILE__ ) . '/../messageObject/MessageObject.class.php';
 require_once dirname ( __FILE__ ) . '/../../utils/UniqueIdGenerator.class.php';
 require_once dirname ( __FILE__ ) . '/../../utils/FileUploader.class.php';
 require_once dirname ( __FILE__ ) . '/../../utils/SQLHelper.class.php';
+require_once dirname ( __FILE__ ) . '/../../utils/ConfigUtil.class.php';
 
 class HeiMessageService extends MessageService {
 	
@@ -66,9 +67,12 @@ class HeiMessageService extends MessageService {
 		$uid = $uniqueIdGenerator->getUniqueId();
 		$htmlName = $uid . ".html";
 	
-		//$host = "http://lixin.tunnel.mobi/weixin/html/";
-		$host = "http://7xjv6k.com1.z0.glb.clouddn.com/";
-	
+		if(ConfigUtil::getInstance()->isInDebugMode()) {
+			$host = "http://lixin.tunnel.mobi/weixin/html/";
+		} else {
+			$host = "http://7xjv6k.com1.z0.glb.clouddn.com/";
+		}
+		
 		$htmlUrl = $host . $htmlName;
 		$arr['url'] = $htmlUrl;
 	
@@ -81,15 +85,19 @@ class HeiMessageService extends MessageService {
 		file_put_contents($htmlFilePath, $fileStr);
 		
 		// 上传至七牛
-		$fileUploader = new FileUploader();
-		$fileUploader->uploadFile($htmlName, $htmlFilePath);
+		if(! ConfigUtil::getInstance()->isInDebugMode()) {
+			$fileUploader = new FileUploader();
+			$fileUploader->uploadFile($htmlName, $htmlFilePath);
+		}
 	
 		$sqlHelper = new SQLHelper();
 		$sql = "insert into wx_message (gmt_create, gmt_modify, hei_name, title_id, pic_id, content_ids, html_url) values (now(), now(), '" . $name . "', " . $dbArr['titleIndex'] . ", " . $dbArr['picIndex'] . ", '" . $dbArr['contentIndexes'] . "', '" . $htmlUrl . "')";
 		$sqlHelper->execute_dqm($sql);
 	
 		//delete html
-		unlink($htmlFilePath);
+		if(! ConfigUtil::getInstance()->isInDebugMode()) {
+			unlink($htmlFilePath);
+		}
 	
 		return $arr;
 	

@@ -13,7 +13,3 @@ uploads
 config
 .htaccess
 papers/note/petshow/images
-changePoint.txt
-weixinMessage
-/weixinMessage/messageService/HeiMessageService.class.php
-/utils/FileUploader.class.php
