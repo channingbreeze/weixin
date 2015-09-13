@@ -15,9 +15,9 @@ class FileUploader
 	private $uploadMgr;
 	
 	function __construct() {
-		$this->accessKey = 'yourAccessKey';
-		$this->secretKey = 'yourAccessKey';
-		$this->bucket = 'yourBucket';
+		$this->accessKey = 'SLaMlSIvFkz8Y9lG5AKtK-EhYHT57VKgn9xrKsIp';
+		$this->secretKey = 'pidQCRSmTPSFKO7GkxJCb7AlKuDZq61_W6WTtepK';
+		$this->bucket = 'webxinxin';
 		$this->auth = new Auth($this->accessKey, $this->secretKey);
 		$this->token = $this->auth->uploadToken($this->bucket);
 		$this->uploadMgr = new UploadManager();
