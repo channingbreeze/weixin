@@ -1,14 +1,16 @@
 <?php
 
-require_once dirname ( __FILE__ ) . '/weixinMessageFactory.class.php';
-require_once dirname ( __FILE__ ) . '/../utils/StringUtil.class.php';
+require_once dirname ( __FILE__ ) . '/messageHandler/MessageHandlerFactory.class.php';
+require_once dirname ( __FILE__ ) . '/messageSender/MessageSenderFactory.class.php';
 
 class WeixinHelper
 {
-	private $weixinMessageFactory;
+	private $messageHandlerFactory;
+	private $messageSenderFactory;
 
 	function __construct() {
-		$this->weixinMessageFactory = new WeixinMessageFactory();
+		$this->messageHandlerFactory = new MessageHandlerFactory();
+		$this->messageSenderFactory = new MessageSenderFactory();
 	}
 	
 	public function check()
@@ -33,21 +35,10 @@ class WeixinHelper
 			
 			libxml_disable_entity_loader(true);
 			$postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-			$msgType = $postObj->MsgType;
-			
-			if($msgType == "text") {
-				$keyword = trim($postObj->Content);
-				if(StringUtil::startsWith($keyword, "嘿嘿")) {
-					return $this->weixinMessageFactory->responsePictureArticalMessage($postObj);
-				} else if(StringUtil::endsWith($keyword, "答案")) {
-					$this->weixinMessageFactory->responseTextMessage($postObj);
-				} else {
-					$this->weixinMessageFactory->responseTextMessage($postObj);
-				}
-			} else if($msgType == "event") {
-				$this->weixinMessageFactory->responseEventMessage($postObj);
-			}
-			
+			$messageHandler = $this->messageHandlerFactory->getMessageHandler($postObj);
+			$message = $messageHandler->handleMessage($postObj);
+			$messageSender = $this->messageSenderFactory->getMessageSender($message);
+			$messageSender->sendMessage($message);
 		}else {
 			echo "";
 			exit;

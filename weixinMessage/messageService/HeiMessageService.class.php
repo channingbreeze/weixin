@@ -1,11 +1,13 @@
 <?php
 
-require_once dirname ( __FILE__ ) . '/../utils/SQLHelper.class.php';
-require_once dirname ( __FILE__ ) . '/../utils/UniqueIdGenerator.class.php';
-require_once dirname ( __FILE__ ) . '/../utils/FileUploader.class.php';
+require_once dirname ( __FILE__ ) . '/MessageService.class.php';
+require_once dirname ( __FILE__ ) . '/../messageObject/MessageObject.class.php';
+require_once dirname ( __FILE__ ) . '/../../utils/UniqueIdGenerator.class.php';
+require_once dirname ( __FILE__ ) . '/../../utils/FileUploader.class.php';
+require_once dirname ( __FILE__ ) . '/../../utils/SQLHelper.class.php';
 
-class WeixinHeiGame
-{
+class HeiMessageService extends MessageService {
+	
 	private $namePlaceholder;
 	private $picPlaceholder;
 	private $contentPlaceholder;
@@ -31,72 +33,72 @@ class WeixinHeiGame
 		mt_srand($this->make_seed());
 	}
 	
-	public function responseHei($keyword) {
-		
+	private function responseHei($keyword) {
+	
 		$name = mb_substr($keyword, 2, mb_strlen($keyword, 'UTF-8') - 2, 'UTF-8');
 		if(strlen($name) == 0) {
 			$name = "玩命牛";
 		}
-		
+	
 		$dbArr = $this->getDataFromDB();
-		
+	
 		$message = $dbArr['title'];
 		$message = str_replace($this->namePlaceholder, $name, $message);
-		
+	
 		$desIndex = rand(0, count($this->desArr)-1);
 		$des = $this->desArr[$desIndex];
-		
+	
 		$arr = array();
 		$arr['title'] = $message;
 		$arr['des'] = $des;
 		$arr['pic'] = $dbArr['pic'];
-		
+	
 		$conArr = $dbArr['content'];
 		$replacedContent = "";
-		
+	
 		for($i=0; $i<count($conArr); $i++) {
 			$oneContent = $conArr[$i];
 			$oneContent = str_replace($this->namePlaceholder, $name, $oneContent);
 			$replacedContent = $replacedContent . $oneContent;
 		}
-		
+	
 		$uniqueIdGenerator = new UniqueIdGenerator();
 		$uid = $uniqueIdGenerator->getUniqueId();
 		$htmlName = $uid . ".html";
-		
+	
 		//$host = "http://lixin.tunnel.mobi/weixin/html/";
 		$host = "http://7xjv6k.com1.z0.glb.clouddn.com/";
-		
+	
 		$htmlUrl = $host . $htmlName;
 		$arr['url'] = $htmlUrl;
-		
-		$fileStr = file_get_contents(dirname ( __FILE__ ) . "/../template/template.html");
+	
+		$fileStr = file_get_contents(dirname ( __FILE__ ) . "/../../template/template.html");
 		$fileStr = str_replace($this->titlePlaceholder, $message, $fileStr);
 		$fileStr = str_replace($this->picPlaceholder, $arr['pic'], $fileStr);
 		$fileStr = str_replace($this->contentPlaceholder, $replacedContent, $fileStr);
 		$fileStr = str_replace($this->datePlaceholder, date("Y-m-d H:i:s"), $fileStr);
-		$htmlFilePath = dirname ( __FILE__ ) . "/../html/" . $htmlName;
+		$htmlFilePath = dirname ( __FILE__ ) . "/../../html/" . $htmlName;
 		file_put_contents($htmlFilePath, $fileStr);
 		
 		// 上传至七牛
 		$fileUploader = new FileUploader();
 		$fileUploader->uploadFile($htmlName, $htmlFilePath);
-		
+	
 		$sqlHelper = new SQLHelper();
 		$sql = "insert into wx_message (gmt_create, gmt_modify, hei_name, title_id, pic_id, content_ids, html_url) values (now(), now(), '" . $name . "', " . $dbArr['titleIndex'] . ", " . $dbArr['picIndex'] . ", '" . $dbArr['contentIndexes'] . "', '" . $htmlUrl . "')";
 		$sqlHelper->execute_dqm($sql);
-		
+	
 		//delete html
 		unlink($htmlFilePath);
-		
+	
 		return $arr;
-		
+	
 	}
 	
 	private function getDataFromDB() {
-		
+	
 		$arr = array();
-		
+	
 		$sqlHelper = new SQLHelper();
 		$sql = "select * from wx_range";
 		$rangeArr = $sqlHelper->execute_dql_array($sql);
@@ -152,7 +154,49 @@ class WeixinHeiGame
 		list($usec, $sec) = explode(' ', microtime());
 		return (float) $sec + ((float) $usec * 100000);
 	}
-
+	
+	/**
+	 * $message->Type 必须
+	 * text:
+	 * $message->Type = "text"
+	 * $message->FromUserName
+	 * $message->ToUserName
+	 * $message->Content
+	 * news:
+	 * $message->Type = "news"
+	 * $message->FromUserName;
+	 * $message->ToUserName;
+	 * $message->newsArr;
+	 *           foreach ($message->newsArr as $news)
+	 *           $news['Title']
+	 *           $news['Description']
+	 *           $news['PicUrl']
+	 *           $news['Url']
+	 * none:
+	 * $message->Type = "none"
+	 */
+	public function generateMessage($postObj) {
+		
+		$message = new MessageObject();
+		$message->Type = "news";
+	    $message->FromUserName = $postObj->ToUserName;
+		$message->ToUserName = $postObj->FromUserName;
+		
+		$arr = $this->responseHei(trim($postObj->Content));
+		$newsArr = array();
+		$news = array();
+		$news['Title'] = $arr['title'];
+	 	$news['Description'] = $arr['des'];
+	 	$news['PicUrl'] = $arr['pic'];
+	 	$news['Url'] = $arr['url'];
+	 	$newsArr[0] = $news;
+	 	
+	 	$message->newsArr = $newsArr;
+	 	
+		return $message;
+		
+	}
+	
 }
 
 ?>
