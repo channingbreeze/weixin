@@ -66,8 +66,8 @@ class HeiMessageService extends MessageService {
 		$uid = $uniqueIdGenerator->getUniqueId();
 		$htmlName = $uid . ".html";
 	
-		//$host = "http://lixin.tunnel.mobi/weixin/html/";
-		$host = "http://7xjv6k.com1.z0.glb.clouddn.com/";
+		$host = "http://lixin.tunnel.mobi/weixin/html/";
+		//$host = "http://7xjv6k.com1.z0.glb.clouddn.com/";
 	
 		$htmlUrl = $host . $htmlName;
 		$arr['url'] = $htmlUrl;
@@ -81,15 +81,15 @@ class HeiMessageService extends MessageService {
 		file_put_contents($htmlFilePath, $fileStr);
 		
 		// 上传至七牛
-		$fileUploader = new FileUploader();
-		$fileUploader->uploadFile($htmlName, $htmlFilePath);
+		//$fileUploader = new FileUploader();
+		//$fileUploader->uploadFile($htmlName, $htmlFilePath);
 	
 		$sqlHelper = new SQLHelper();
 		$sql = "insert into wx_message (gmt_create, gmt_modify, hei_name, title_id, pic_id, content_ids, html_url) values (now(), now(), '" . $name . "', " . $dbArr['titleIndex'] . ", " . $dbArr['picIndex'] . ", '" . $dbArr['contentIndexes'] . "', '" . $htmlUrl . "')";
 		$sqlHelper->execute_dqm($sql);
 	
 		//delete html
-		unlink($htmlFilePath);
+		//unlink($htmlFilePath);
 	
 		return $arr;
 	
