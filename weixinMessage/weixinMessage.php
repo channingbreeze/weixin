@@ -2,7 +2,7 @@
 
 require_once dirname ( __FILE__ ) . '/weixinHelper.class.php';
 
-define("TOKEN", "lixin");
+define("TOKEN", "yourToken");
 $weixinHelper = new WeixinHelper();
 $weixinHelper->check();
 
