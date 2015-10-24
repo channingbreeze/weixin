@@ -8,6 +8,8 @@ class ConfigUtil {
 	public $secretKey;
 	public $bucket;
 	public $debug;
+	public $faceppKey;
+	public $faceppSecret;
 	
 	private function __construct() {
 		$arr = parse_ini_file ( dirname ( __FILE__ ) . "/../config/env.ini" );
@@ -16,6 +18,8 @@ class ConfigUtil {
 		$this->secretKey = $arr ['secretKey'];
 		$this->bucket = $arr ['bucket'];
 		$this->debug = $arr ['debug'];
+		$this->faceppKey = $arr ['faceppKey'];
+		$this->faceppSecret = $arr ['faceppSecret'];
 	}
 	
 	public static function getInstance(){

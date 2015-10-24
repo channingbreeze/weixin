@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="dns-prefetch" href="//res.wx.qq.com">
+	<link rel="dns-prefetch" href="//mmbiz.qpic.cn">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+	<link rel="shortcut icon" type="image/x-icon" href="http://res.wx.qq.com/mmbizwap/zh_CN/htmledition/images/icon/common/favicon22c41b.ico">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="format-detection" content="telephone=no">
+	<title>[[title]]</title>
+	<style>
+	* {
+		margin: 0px;
+		padding: 0px;
+	}
+	h1 {
+		font-size: 25px;
+		margin: 10px;
+	}
+	.date {
+		color: gray;
+		font-size: 16px;
+		padding: 10px;
+	}
+	canvas {
+		width: 100%;
+	}
+	li {
+		list-style-type: none;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	.content {
+		background-color: #CFE9FC;
+		font-size: 20px;
+		margin: 20px 10px;
+		padding: 10px;
+		line-height: 30px;
+		border-radius: 20px;
+		box-shadow : 5px 5px 10px black;
+	}
+	.message {
+		margin-top: 30px;
+		margin-bottom: 30px;
+		padding: 10px;
+		font-size: 20px;
+		line-height: 30px;
+		margin: 20px 10px;
+		padding: 10px;
+		background-color: #FFCECE;
+		border-radius: 20px;
+		box-shadow : 5px 5px 10px black;
+	}
+	.black {
+		font-weight: bold;
+		font-size: 25px;
+	}
+	.step {
+		color: blue;
+		font-size: 23px;
+	}
+	.red {
+		color: red;
+	}
+	.copyright {
+		text-align: center;
+		font-size: 12px;
+		margin-bottom: 10px;
+	}
+	.qrcode {
+		margin: 0px auto;
+		display: block;
+	}
+	</style>
+</head>
+<body>
+<h1>[[title]]</h1>
+<div class="date">[[date]]</div>
+<canvas id="mycanvas">
+</canvas>
+<div class="content">
+[[content]]
+</div>
+<div class="message">
+<span>觉得<span class="black">很有意思</span>么？！你也可以来玩儿，只要</span><br/>
+<span class="step">第一步：长按下方二维码，选择“<span class="red">识别图中二维码</span>”</span><br/>
+<img class="qrcode" src="http://7xjv6k.com1.z0.glb.clouddn.com/webxinxin.jpg" /><br/>
+<span class="step">第二步：<span class="red">关注“欣欣网站制作”</span>公众号</span><br/>
+<span class="step">第三步：在公众号中<span class="red">回复一张图片</span>，要带人脸的图片哦！</span><br/>
+<span>你会得到你想要的</span><br/>
+<span>不要问我是谁，我是红领巾！</span><br/>
+</div>
+<div class="copyright">
+<span>Copyright <span class="copy">©</span> 2015 webxinxin.com All Rights Reserved</span>
+</div>
+<script>
+ var obj = [[json]];
+ var img = new Image();
+ var manImg = new Image();
+ var womanImg = new Image();
+ img.src = '[[imgUrl]]';
+ manImg.src= "http://7xjv6k.com1.z0.glb.clouddn.com/facepp_man.png";
+ womanImg.src = "http://7xjv6k.com1.z0.glb.clouddn.com/facepp_women.png";
+ document.getElementById('mycanvas').width = obj.img_width;
+ document.getElementById('mycanvas').height = obj.img_height + 137;
+ img.onload = function() {
+	 var canvas = document.getElementById('mycanvas');
+	 var ctx = canvas.getContext("2d");
+	 ctx.drawImage(img, 0, 137);
+	 ctx.strokeStyle = "#FFFFFF";
+	 ctx.lineWidth = 5;
+	 var img_width = obj.img_width;
+	 var img_height = obj.img_height;
+	 for(var i=0; i<obj.face.length; i++) {
+		 var x = obj.face[i].position.center.x * img_width / 100;
+		 var y = obj.face[i].position.center.y * img_height / 100 + 137;
+		 var width = obj.face[i].position.width * img_width / 100;
+		 var height = obj.face[i].position.height * img_height / 100;
+		 ctx.strokeRect(x - width/2, y - height/2, width, height);
+		 if(obj.face[i].attribute.gender.value == "Male" &&
+				obj.face[i].attribute.gender.confidence >= 90) {
+			if(obj.face[i].position.width * img_width / 100 > 100) {
+				ctx.fillStyle = 'rgba(100%, 72%, 12%, 0.5)';
+				ctx.fillRect(x - width/2, y - height/2 - 137, width, 137);
+				ctx.font = 'bold ' + Math.floor(width/2) + 'px arial';
+				ctx.fillStyle = 'red';
+				ctx.drawImage(manImg, x - width/2, y - height/2 - 137);
+				console.log(ctx.measureText(obj.face[i].attribute.age.value + ''));
+		 		ctx.fillText(obj.face[i].attribute.age.value + '', x - width/2 + 60, y - height/2 - (137-Math.floor(width/2))/2 - (137-Math.floor(width/2))/10);
+			}
+		 } else if(obj.face[i].attribute.gender.value == "Female" &&
+				obj.face[i].attribute.gender.confidence >= 90) {
+			 if(obj.face[i].position.width * img_width / 100 > 100) {
+				ctx.fillStyle = 'rgba(100%, 72%, 12%, 0.5)';
+				ctx.fillRect(x - width/2, y - height/2 - 137, width, 137);
+				ctx.font = 'bold ' + Math.floor(width/2) + 'px arial';
+				ctx.fillStyle = 'red';
+				ctx.drawImage(womanImg, x - width/2, y - height/2 - 137);
+				console.log(ctx.measureText(obj.face[i].attribute.age.value + ''));
+			 	ctx.fillText(obj.face[i].attribute.age.value + '', x - width/2 + 60, y - height/2 - (137-Math.floor(width/2))/2 - (137-Math.floor(width/2))/10);
+			 }
+		 }
+	 }
+ }
+</script>
+</body>

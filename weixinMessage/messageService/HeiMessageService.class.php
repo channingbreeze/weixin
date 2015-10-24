@@ -76,7 +76,7 @@ class HeiMessageService extends MessageService {
 		$htmlUrl = $host . $htmlName;
 		$arr['url'] = $htmlUrl;
 	
-		$fileStr = file_get_contents(dirname ( __FILE__ ) . "/../../template/template.html");
+		$fileStr = file_get_contents(dirname ( __FILE__ ) . "/../../template/heiTemplate.html");
 		$fileStr = str_replace($this->titlePlaceholder, $message, $fileStr);
 		$fileStr = str_replace($this->picPlaceholder, $arr['pic'], $fileStr);
 		$fileStr = str_replace($this->contentPlaceholder, $replacedContent, $fileStr);
